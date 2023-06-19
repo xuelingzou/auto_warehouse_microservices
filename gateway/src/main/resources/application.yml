@@ -1,0 +1,41 @@
+server:
+  port: 8181
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: core/supermarket
+          uri: http://localhost:8081
+          predicates:
+            - Path=/core/supermarket/**
+          filters:
+            - StripPrefix=2
+        - id: core/admin
+          uri: http://localhost:8082
+          predicates:
+            - Path=/core/admin/**
+          filters:
+            - StripPrefix=2
+        - id: core/pay
+          uri: http://localhost:8083
+          predicates:
+            - Path=/core/pay/**
+          filters:
+            - StripPrefix=2
+        - id: core/equipment
+          uri: http://localhost:8084
+          predicates:
+            - Path=/core/equipment/**
+          filters:
+            - StripPrefix=2
+
+# eureka配置 客户端配置，注册到服务中心
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

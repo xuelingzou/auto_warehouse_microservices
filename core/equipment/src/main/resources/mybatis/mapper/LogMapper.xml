@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.auto_warehouse.mapper.LogMapper">
+    <insert id="addLog">
+        insert into auto_warehouseDB.log
+        values (#{sid}, #{cid}, #{rid}, #{ceid}, #{suid}, #{recordTime}, #{logContent}, #{orderID});
+    </insert>
+
+    <select id="getLogByCid" resultType="com.example.auto_warehouse.bean.Log">
+        select * from auto_warehouseDB.log where cid=#{cid} LIMIT 1;
+    </select>
+    <select id="getAllCidByOrderID" resultType="java.lang.Integer">
+        select cid from auto_warehouseDB.log where orderID=#{orderID} and logContent="待入库";
+    </select>
+    <select id="getReleaseCidByOrderID" resultType="java.lang.Integer">
+        select cid from auto_warehouseDB.log where orderID=#{orderID} and logContent="变更未送达";
+    </select>
+    <select id="getConfirmCidByOrderID" resultType="java.lang.Integer">
+        select cid from auto_warehouseDB.log where orderID=#{orderID} and logContent="入库待确认状态";
+    </select>
+</mapper>

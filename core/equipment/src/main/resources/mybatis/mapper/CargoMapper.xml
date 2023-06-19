@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.auto_warehouse.mapper.CargoMapper">
+
+    <select id="showAll" resultType="com.example.auto_warehouse.bean.Cargo">
+        select * from auto_warehouseDB.cargo;
+    </select>
+
+    <select id="getNewCid" resultType="int">
+        select max(cid) from auto_warehouseDB.cargo;
+    </select>
+
+    <select id="getNotExpireNum" resultType="java.lang.Integer">
+        select count(cid) from auto_warehouseDB.cargo
+        where sid=#{sid} and orderID=#{orderID} and state="not expire";
+    </select>
+
+    <select id="outputBatch" resultType="com.example.auto_warehouse.bean.Cargo">
+        select * from auto_warehouseDB.cargo
+        where outputTime is null and sid=#{sid} and orderID=#{orderID}
+        order by productionDate LIMIT 1;
+    </select>
+
+    <insert id="addCargo" parameterType="com.example.auto_warehouse.bean.Cargo">
+        insert into auto_warehouseDB.cargo (sid, sname, productionDate, shelfLife, state, suid,orderID)
+        values (#{sid}, #{sname}, #{productionDate}, #{shelfLife}, #{state}, #{suid}, #{orderID});
+    </insert>
+
+    <update id="updateOutputTime">
+        update auto_warehouseDB.cargo set outputTime=#{outputTime} where cid=#{cid};
+    </update>
+
+    <select id="showExpire" resultType="com.example.auto_warehouse.bean.Cargo">
+        select * from auto_warehouseDB.cargo where state="expire";
+    </select>
+
+    <update id="updateExpire">
+        update auto_warehouseDB.cargo set state="expire"
+        where outputTime is null and TIMESTAMPDIFF(DAY, productionDate, NOW())>=shelfLife;
+    </update>
+
+    <select id="findByState" parameterType="java.lang.String" resultType="com.example.auto_warehouse.bean.Cargo">
+        select * from auto_warehouseDB.cargo where state = #{state};
+    </select>
+
+    <select id="findSupByCid" parameterType="int" resultType="java.lang.String">
+        select suid from auto_warehouseDB.cargo where cid = #{cid};
+    </select>
+
+    <update id="modifyCargoState" parameterType="com.example.auto_warehouse.bean.Cargo">
+        update auto_warehouseDB.cargo set state="变更未送达" where cid=#{cid};
+    </update>
+    <update id="updateInputTime">
+        update auto_warehouseDB.cargo set inputTime=#{inputTime} where orderID=#{orderID} and state!="变更未送达";
+    </update>
+    <update id="modifyCargoStateCommon" parameterType="com.example.auto_warehouse.bean.Cargo">
+        update auto_warehouseDB.cargo set state=#{state} where cid=#{cid};
+    </update>
+
+</mapper>
